@@ -6,6 +6,12 @@
 #include <windows.h>
 
 
+void showFileTime( _TCHAR* token, FILETIME *ft ){
+  SYSTEMTIME st;
+  FileTimeToSystemTime(ft, &st);
+  _tprintf(TEXT("%s: %d:%d:%d:%d\n"), token, st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     TCHAR command[80];
@@ -55,16 +61,13 @@ int _tmain(int argc, _TCHAR* argv[])
     _tprintf(TEXT("Terminou...\n"));
 
 	FILETIME ft, ft2, ft3, ft4;
-	SYSTEMTIME st;
-
 	GetProcessTimes(newProcessHandle, &ft, &ft2, &ft3, &ft4);
-
-	FileTimeToSystemTime(&ft4, &st);
-
-
-	_tprintf(TEXT("tempo: %d:%d:%d:%d\n"), st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
-
-
+	FileTimeToLocalFileTime( &ft2, &ft2 ); 
+	FileTimeToLocalFileTime( &ft , &ft  );
+	showFileTime( TEXT("lpUserTime::")    , &ft4);
+    showFileTime( TEXT("lpKernelTime::")  , &ft3);
+	showFileTime( TEXT("lpExitTime::")    , &ft2);
+	showFileTime( TEXT("lpCreationTime::"), &ft);
 
 		
     BOOL resultClose;
