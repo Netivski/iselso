@@ -11,19 +11,26 @@
 #include "..\..\include\BeginThreadex.h"
 
 
-DWORD WINAPI ImprimeThread(LPVOID args)
+DWORD WINAPI ImprimeThread(int sleepTime)
 {
-    int id = *(int*) args;
-
-	while (true) {
-	    _tprintf(TEXT("Thread[%d]: Olá Mundo!!!\n"), id);
-	}
-    return 0;
+	_tprintf(TEXT("Sleep[%d]: Olá Mundo!!!\n"), sleepTime);
+	Sleep( sleepTime ); 
+	return 0;
 }
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	for( int i = 0; i < argc; i++ ){
+		_tprintf( TEXT("%i :: %s\n"), i, argv[i] );
+	}
+
+	int tCount, tSleep;
+	if( argc == 3 ){
+		tCount = _ttoi( argv[1] );
+		tSleep = _ttoi( argv[2] );
+	}
+
     HANDLE ht[NTHREADS];
     DWORD	threadId[NTHREADS];
 
@@ -32,12 +39,13 @@ int _tmain(int argc, _TCHAR* argv[])
    _tprintf(TEXT("Main: Vou criar as tarefas\n"));
 
    // Criar as tarefas
-   for(int i=0; i<NTHREADS; i++) {
+   for(int i=0; i<tCount; i++) {
 
 	   int *thNumber = new int(i);
 
 	   //ImprimeThread((LPVOID)thNumber);
-       ht[i] = chBEGINTHREADEX( NULL, 0, ImprimeThread, (LPVOID)thNumber, NULL, &threadId[i]);
+	   printf("tSleep: %d\n", tSleep);
+	   ht[i] = chBEGINTHREADEX( NULL, 0, ImprimeThread, tSleep, NULL, &threadId[i]);
        if (ht[i] == NULL)
            _tprintf(TEXT("Erro ao criar a thread nº: %d (%d)"), i, GetLastError());
    }
